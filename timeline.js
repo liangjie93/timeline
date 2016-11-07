@@ -1,56 +1,51 @@
 $(".right").css("width",document.documentElement.clientWidth-202 +"px");
-var row = $(".layer").children().length;//层
+var row = $(".layerBox").children().length;//层
 var col = 0;//滑块
 var bodyMargin = parseInt($("body").css("margin-left"));
+var edgeWidth;
 var id=function(o){return document.getElementById(o) || o;}
 
-//添加图层 和 时间条
+//添加图层
 var addLayer = function (){
-	row = $(".layer").children().length;
+	row = $(".layerBox").children().length;
 	row++;
 	var layerHide = '<span class="layerHide"></span>';
 	var layerName = '<div class="layerName"><img src="" alt=""><span>'+'图层0'+row+'</span></div>';
-	$(".layer").append('<div data-id="1'+row+'" class="layerBox" id="layer_'+row+'" onclick="clickLayer(this)">'+layerHide+layerName+'</div>');
-	var slider = '<div data-id="2'+row+'" class="sliderBox" id="slider'+row+'"  onclick="clickLayer(this)"></div>';
-	$(".slider").append(slider);
-	$("#layer_"+row).addClass("active").siblings().removeClass('active');
+	$(".layerBox").append('<div data-id="1'+row+'" class="layer" id="layer'+row+'" onmousedown="clickLayer(this)">'+layerHide+layerName+'</div>');
+	$(".sliderBox").append('<div data-id="2'+row+'" class="slider" id="slider'+row+'"  onmousedown="clickLayer(this)"></div>');
+	$("#layer"+row).addClass("active").siblings().removeClass('active');
 	$("#slider"+row).addClass("active").siblings().removeClass('active');
 }
 //选择图层
 function clickLayer(obj){
 	var layerDataId = obj.dataset.id.substr(1);
-	$("#layer_"+layerDataId).addClass("active").siblings().removeClass('active');
-	$("#slider"+layerDataId).addClass("active").siblings().removeClass('active');
 	row = layerDataId;
+	$("#layer"+row).addClass("active").siblings().removeClass('active');
+	$("#slider"+row).addClass("active").siblings().removeClass('active');
 }
 //添加滑块
 var addBox = function (){
 	col = $("#slider"+row).children().length;
-	if(col==0){
-		col = 0;
-	}
 	col++;
 	var main = "<div data-id='"+row+"_"+col+"' id='main"+row+"_"+col+"'class='main' onmousedown='change(this,event)'></div>";
-	var head = "<div data-id='"+row+"_"+col+"' id='head"+row+"_"+col+"'class='mea head' onmousedown='change(this,event)'></div>";
-	var tail = "<div data-id='"+row+"_"+col+"' id='tail"+row+"_"+col+"'class='mea tail' onmousedown='change(this,event)'></div>";
+	var head = "<div data-id='"+row+"_"+col+"' id='head"+row+"_"+col+"'class='edge head' onmousedown='change(this,event)'></div>";
+	var tail = "<div data-id='"+row+"_"+col+"' id='tail"+row+"_"+col+"'class='edge tail' onmousedown='change(this,event)'></div>";
 	$("#slider"+row).append("<div data-id='"+row+"_"+col+"' id='box"+row+"_"+col+"' class='box'>"+head+main+tail+"</div>");
+	edgeWidth = parseInt($(".edge").css("width"));
 }
-
 //移动滑块
 var change=function(o,e){
-	var boxDataId = o.dataset.id.substr(2);
 	var boxId = o.dataset.id;
-	console.log(boxId);
+	$('#main'+boxId).addClass("active").parent().siblings().children().removeClass('active');
+	$('#main'+boxId).addClass("active").parent().parent().siblings().children().children().removeClass('active');
+	var boxDataId = boxId.substr(2);
 	var last=0;
 	if(boxDataId ==1){
 		last = 0;
 	}
 	else{
 		lastId = boxDataId - 1;
-		last = id('tail'+row +"_"+ lastId).offsetLeft+3;
-		if(last == undefined || last == NaN){
-			last = 0;
-		}
+		last = id('tail'+row +"_"+ lastId).offsetLeft+edgeWidth;
 		console.log(last);
 	}
 	var redundant = bodyMargin +last;
@@ -87,21 +82,21 @@ var change=function(o,e){
 		}
 		function move(d){
 			if(r_x > l_x + 9 && len>=0 &&l_x>=0) {
-				id('main'+boxId).style.width=r_x - l_x - 3 + 'px';
+				id('main'+boxId).style.width=r_x - l_x - edgeWidth + 'px';
 				if(d=='l')	{
-					document.getElementById('v1').innerHTML =Math.round(len/10);
+					document.getElementById('v1').innerHTML =len/10;
 					id('head'+boxId).style.marginLeft= l_x + "px";
 				}
 				else	{
-					document.getElementById('v2').innerHTML =Math.round(len/10);
+					document.getElementById('v2').innerHTML =(len+edgeWidth)/10;
 				}
 			}
 		};
 		function move2(){
 			if(l_x>=0 ) {
 				id('head'+boxId).style.marginLeft= l_x + "px";
-				document.getElementById('v1').innerHTML =Math.round(l_x/10);
-				document.getElementById('v2').innerHTML =Math.round(r_x/10);
+				document.getElementById('v1').innerHTML =l_x/10;
+				document.getElementById('v2').innerHTML =(r_x+edgeWidth)/10;
 			}
 		};
 	}
