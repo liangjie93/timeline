@@ -2,8 +2,8 @@ var rightW = document.documentElement.clientWidth-202;
 // $(".right").css("width",rightW +"px");
 var row = $(".layerBox").children().length;//层
 var rowArr = [row];
-var col = 0;//滑块
-var colArr = [col];
+var col = 0;//动画
+var colArr = [0];
 var edgeWidth;
 var id=function(o){return document.getElementById(o) || o;}
 var boxId;
@@ -18,7 +18,9 @@ var addLayer = function (){
 	$(".sliderBox").append('<div data-id="2'+row+'" class="slider" id="slider'+row+'" onmousedown="clickLayer(this)"></div>');
 	$("#layer"+row).addClass("active").siblings().removeClass('active');
 	$("#slider"+row).addClass("active").siblings().removeClass('active');
-	// alert("添加图层")
+	colArr = [0];
+	// bridge.showMsgBox();
+	// bridge.receiveText('aaaa');
 }
 //选择图层
 function clickLayer(obj){
@@ -26,11 +28,12 @@ function clickLayer(obj){
 	row = layerDataId;
 	$("#layer"+row).addClass("active").siblings().removeClass('active');
 	$("#slider"+row).addClass("active").siblings().removeClass('active');
+	colArr = [0];
 }
 //修改图层名
 function editLayerName(){
 	strName = $(".editLayerName").val();
-	if (strName == null || strName == ""){
+	if (strName == null || strName == "" || strName == undefined){
 		alert("请输入名称")
 		return;
 	}
@@ -51,15 +54,22 @@ function removeLayer(){
 }
 //添加动画
 function addBox(){
-	col = $("#slider"+row).children().length;
+	var sliderNum = $("#slider"+row)[0].childElementCount;
+	// console.log(sliderNum+","+colArr.length);
+	$("#slider"+row+">div").each(function(){//遍历子div
+		col = $(this)[0].dataset.id.substr(2);
+		if(colArr.length < sliderNum+1){
+			colArr.push(col);
+		}     
+	})
+	col = colArr[colArr.length-1];
 	col++;
-	console.log(row);
+	colArr.push(col);
 	var main = "<div data-id='"+row+"_"+col+"' id='main"+row+"_"+col+"'class='main' onmousedown='change(this,event)'></div>";
 	var head = "<div data-id='"+row+"_"+col+"' id='head"+row+"_"+col+"'class='edge head' onmousedown='change(this,event)'></div>";
 	var tail = "<div data-id='"+row+"_"+col+"' id='tail"+row+"_"+col+"'class='edge tail' onmousedown='change(this,event)'></div>";
 	$("#slider"+row).append("<div data-id='"+row+"_"+col+"' id='box"+row+"_"+col+"' class='box' onmousedown='clickBox(this)'>"+head+main+tail+"</div>");
 	edgeWidth = parseInt($(".edge").css("width"));
-	// alert("添加动画")
 }
 //选择动画
 function clickBox(obj){
@@ -69,15 +79,13 @@ function clickBox(obj){
 }
 //删除动画
 function removeBox(){
-	// var boxId = o.dataset.id;
 	$("#box"+boxId).remove();
-	console.log(col)
 }
 //移动动画
 function change(o,e){
-	var firstId = $("#slider"+row)[0].firstChild.dataset.id;//这个图层的第一个动画 var firstId = $("#slider"+row+">:first")[0].dataset.id;
 	boxId = o.dataset.id;//当前移动的动画id号
-	var before=0;
+	var firstId = $("#box"+boxId).parent()[0].firstChild.dataset.id;//这个图层的第一个动画 var firstId = $("#slider"+row+">:first")[0].dataset.id;
+	var before = 0;
 	if(boxId != firstId){//移动的不是第一个动画
 		var beforeId = $('#box'+boxId).prev()[0].dataset.id;//前一个动画的id
 		before = id('tail'+beforeId).offsetLeft+edgeWidth;
@@ -90,7 +98,7 @@ function change(o,e){
 		tailX: id('tail'+boxId).offsetLeft-before,
 		dX: e.clientX-before
 	};
-	console.log(init);
+	// console.log(init);
 	document.onmousemove=function(e){
 		var e = e ? e : window.event;
 		var dist=e.clientX-init.dX,
