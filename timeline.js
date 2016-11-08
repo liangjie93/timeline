@@ -44,27 +44,22 @@ function editLayerName(){
 function removeLayer(){
 	$("#layer"+row).remove();
 	$("#slider"+row).remove();
-	// for(var i=0; i<rowArr.length; i++) {
-	// 	if(rowArr[i] == row) {
-	// 		rowArr.splice(i, 1);
-	// 		break;
-	// 	}
-	// }
 	row = rowArr[rowArr.length-1];
 }
 //添加动画
 function addBox(){
-	var sliderNum = $("#slider"+row)[0].childElementCount;
-	// console.log(sliderNum+","+colArr.length);
-	$("#slider"+row+">div").each(function(){//遍历子div
-		col = $(this)[0].dataset.id.substr(2);
-		if(colArr.length < sliderNum+1){
-			colArr.push(col);
-		}     
-	})
+	if(row==0)return;
+	var sliderNum = $("#slider"+row)[0].childElementCount;//子集个数
+	if(colArr.length-1 < sliderNum){
+		$("#slider"+row+">div").each(function(){//遍历子div
+			col = $(this)[0].dataset.id.substr(2);
+				colArr.push(col);
+		})
+	}
 	col = colArr[colArr.length-1];
 	col++;
 	colArr.push(col);
+	console.log(colArr)
 	var main = "<div data-id='"+row+"_"+col+"' id='main"+row+"_"+col+"'class='main' onmousedown='change(this,event)'></div>";
 	var head = "<div data-id='"+row+"_"+col+"' id='head"+row+"_"+col+"'class='edge head' onmousedown='change(this,event)'></div>";
 	var tail = "<div data-id='"+row+"_"+col+"' id='tail"+row+"_"+col+"'class='edge tail' onmousedown='change(this,event)'></div>";
