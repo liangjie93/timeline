@@ -1,8 +1,5 @@
-// var rightW;
-var row = $(".layerBox").children().length;//层
-var rowArr = [row];
-var col = 0;//动画
-var colArr = [0];
+var row;//层
+var col;//动画
 var edgeWidth;
 var id=function(o){return document.getElementById(o) || o;}
 var animateId;
@@ -13,10 +10,8 @@ var layerIndex;
 var layerName;
 
 //1.添加图层
-var addLayer = function (type,strName){//index row=index
-	row = rowArr[rowArr.length-1];
-	row++;
-	rowArr.push(row);
+var addLayer = function (type,index,strName){
+	row = index;
 	var layerHide = '<div class="layerHide"><img src="img/show_1.png" alt=""  id="hide'+row+'" onclick="hideLayer()"/></div>';
 	var layerName = '<div class="layerName"><img src="img/'+type+'.png" alt=""><input class="name" id="name'+row+'" value="'+strName+"_" +row+'" placeholder="图层名称" oninput="editLayerName(event)"><img src="img/delete.png" alt="" class="delLayer" id="delLayer'+row+'" onclick="removeLayer()"></div>';
 	$(".layerBox").append('<div data-id="'+row+'" class="layer" id="layer'+row+'" onmousedown="clickLayer(this)">'+layerHide+layerName+'</div>');
@@ -69,19 +64,10 @@ function hideLayer(){
 	console.log(layerIndex+","+bShow);
 }
 //4.添加动画
-function addAnimate(delaytime,duration,repeat){// col = index;
+function addAnimate(index,delaytime,duration,repeat){// col = index;
 	if(row==0)return;
 	var slider = $("#slider"+row);
-	var sliderNum = slider[0].childElementCount;//子集个数
-	if(colArr.length-1 < sliderNum){
-		$("#slider"+row+">div").each(function(){//遍历子div
-			col = $(this)[0].dataset.id.substr(2);
-				colArr.push(col);
-		})
-	}
-	col = colArr[colArr.length-1];
-	col++;
-	colArr.push(col);
+	col = index;
 	var main = "<div data-id='"+row+"_"+col+"' id='main"+row+"_"+col+"'class='main' onmousedown='change(this,event)'></div>";
 	var head = "<div data-id='"+row+"_"+col+"' id='head"+row+"_"+col+"'class='edge head' onmousedown='change(this,event)'></div>";
 	var tail = "<div data-id='"+row+"_"+col+"' id='tail"+row+"_"+col+"'class='edge tail' onmousedown='change(this,event)'></div>";
